@@ -1,0 +1,14 @@
+{
+  "name": "mailauth-root",
+  "version": "1.0.0",
+  "description": "Full-Stack Email-Based Authentication System",
+  "scripts": {
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
