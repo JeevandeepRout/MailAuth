@@ -49,7 +49,7 @@ mailauth/
     │   │   ├── Alert.jsx          # Reusable alert notifications
     │   │   ├── Layout.jsx         # App layout with dynamic navigation & footer
     │   │   ├── Navbar.jsx         # Header with auth state & logout
-    │   │   ├── OtpInput.jsx       # 6-box OTP input with auto-paste support
+    │   │   ├── OtpInput.jsx       # 6-box OTP input
     │   │   └── ProtectedRoute.jsx # Route guard for private pages
     │   ├── context/
     │   │   └── AuthContext.jsx    # React authentication context provider
