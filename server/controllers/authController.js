@@ -115,7 +115,6 @@ const register = async (req, res) => {
         message: 'Registration initiated! Please check your email or server console for the 6-digit verification code.',
         data: {
           email: existingUser.email,
-          devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined,
         },
       });
     }
@@ -152,7 +151,6 @@ const register = async (req, res) => {
       message: 'Registration successful! Please check your email or server console for the 6-digit verification code.',
       data: {
         email: newUser.email,
-        devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined,
       },
     });
   } catch (err) {
@@ -312,7 +310,6 @@ const resendOtp = async (req, res) => {
       message: 'A fresh verification code has been sent to your email (or server console).',
       data: {
         email: user.email,
-        devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined,
       },
     });
   } catch (err) {
@@ -471,7 +468,6 @@ const forgotPassword = async (req, res) => {
       message: 'If an account exists with that email, a password reset code has been sent.',
       data: {
         email: normalizedEmail,
-        devOtp: process.env.NODE_ENV !== 'production' && otp ? otp : undefined,
       },
     });
   } catch (err) {
