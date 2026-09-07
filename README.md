@@ -1,135 +1,145 @@
-# MailAuth — Full-Stack Email-Based Authentication System
+# 🔐 MailAuth
 
-A secure, production-ready MERN stack authentication system with 6-digit email OTP verification, password hashing with bcrypt, JWT sessions secured via HTTP-only cookies, and password recovery.
+MailAuth is a complete, production-ready **MERN Stack** (MongoDB, Express, React, Node.js) authentication system built from the ground up to handle secure email-based user registration, verification, login, and password recovery. 
 
----
+It uses **6-digit cryptographic OTPs (One-Time Passwords)** for email verification and password resets, **JWTs (JSON Web Tokens)** stored securely in **HTTP-only cookies** for session management, and **bcrypt** for password hashing.
 
-## 🌟 Key Features
+## ✨ Features
 
-* **User Registration & Validation**: Name, unique normalized email, and password complexity enforcement (min 8 chars, uppercase, lowercase, number).
-* **6-Digit OTP Email Verification**: Single-use, time-limited (10 min expiry) OTP generated cryptographically and delivered via Nodemailer.
-* **Resend OTP Flow**: Automatic invalidation of previous OTP with 60-second cooldown timer.
-* **Secure Login**: Credentials comparison using `bcrypt.compare`. Blocks unverified accounts with an informative action prompt.
-* **HTTP-Only Cookie JWT Storage**: Eliminates XSS attack vectors; tokens cannot be accessed by client-side JavaScript (`document.cookie`).
-* **Protected Dashboard & Routes**: Route guard on frontend with `/api/auth/me` session validation and private API route protection middleware.
-* **Password Recovery (Forgot & Reset)**: Expiring single-use reset OTP with generic responses to prevent user enumeration attacks.
-* **Zero-Setup Local Dev**: Automatic fallback to in-memory MongoDB and Nodemailer Ethereal preview links if local MongoDB / SMTP are not configured.
+- **User Registration:** Secure account creation with password hashing (bcrypt).
+- **Email Verification (OTP):** Requires users to verify their email address via a 6-digit OTP sent to their inbox before they can log in.
+- **Secure Login & Logout:** Session management using JWTs in HTTP-only cookies (immune to XSS attacks).
+- **Password Recovery:** "Forgot Password" and "Reset Password" workflows using secure OTPs.
+- **Send Custom Emails:** An integrated dashboard form allowing authenticated users to send custom emails through the app's mailer.
+- **Protected Routes:** Both React frontend and Express backend implement protected routes and middleware.
+- **Resilient Database Connections:** Seamlessly connects to MongoDB Atlas (Cloud), Local MongoDB, or automatically falls back to an in-memory database for instant local development without setup.
+- **Flexible SMTP Mailer:** Easily connects to Gmail SMTP for real-world email delivery, with built-in fallbacks to Ethereal Email and local console logging.
 
----
+## 🛠️ Tech Stack
 
-## 📂 Project Architecture
+**Frontend:**
+- React 18 (Vite)
+- Tailwind CSS
+- React Router DOM
+- Axios (for API requests with credentials)
+- Lucide React (Icons)
 
-```text
-mailauth/
-├── package.json               # Root scripts (npm run dev, etc.)
-├── server/
-│   ├── config/
-│   │   ├── db.js              # Mongoose DB connection + dev fallback
-│   │   └── mailer.js          # Nodemailer SMTP transporter + Ethereal fallback
-│   ├── controllers/
-│   │   └── authController.js  # All authentication business logic
-│   ├── middleware/
-│   │   └── authMiddleware.js  # JWT cookie verification middleware
-│   ├── models/
-│   │   └── User.js            # User Mongoose model with safe schema helpers
-│   ├── routes/
-│   │   └── authRoutes.js      # REST API route endpoints
-│   ├── utils/
-│   │   ├── generateOtp.js     # Cryptographic 6-digit OTP generator
-│   │   ├── generateToken.js   # JWT signing utility
-│   │   └── sendEmail.js       # Transactional HTML email templates
-│   ├── .env.example
-│   ├── .env
-│   ├── server.js              # Express app entrypoint
-│   └── test-auth-flow.js      # Full automated integration test suite
-│
-└── client/
-    ├── src/
-    │   ├── components/
-    │   │   ├── Alert.jsx          # Reusable alert notifications
-    │   │   ├── Layout.jsx         # App layout with dynamic navigation & footer
-    │   │   ├── Navbar.jsx         # Header with auth state & logout
-    │   │   ├── OtpInput.jsx       # 6-box OTP input
-    │   │   └── ProtectedRoute.jsx # Route guard for private pages
-    │   ├── context/
-    │   │   └── AuthContext.jsx    # React authentication context provider
-    │   ├── pages/
-    │   │   ├── Home.jsx           # Landing page with feature highlights
-    │   │   ├── Signup.jsx         # Registration form with password requirements
-    │   │   ├── VerifyEmail.jsx    # 6-digit OTP verification with resend timer
-    │   │   ├── Login.jsx          # Login form with unverified email warning
-    │   │   ├── ForgotPassword.jsx # Request password reset code
-    │   │   ├── ResetPassword.jsx  # Submit reset OTP & new password
-    │   │   └── Dashboard.jsx      # Protected user profile & security details
-    │   ├── services/
-    │   │   └── api.js             # Axios instance with withCredentials: true
-    │   ├── App.jsx                # React Router setup
-    │   ├── index.css              # Tailwind CSS styles
-    │   └── main.jsx
-    ├── tailwind.config.js
-    └── vite.config.js
-```
+**Backend:**
+- Node.js & Express.js
+- MongoDB & Mongoose
+- JSON Web Tokens (JWT)
+- bcryptjs (Password Hashing)
+- Nodemailer (Email Delivery)
+- cookie-parser (HTTP-only cookie handling)
 
 ---
 
-## 🚀 Quick Start Guide
+## 🚀 Getting Started
 
-### 1. Install Dependencies
+### 1. Clone the Repository
+
 ```bash
-# In the project root (C:\Users\jeeva\.gemini\antigravity\scratch\mailauth):
-npm run install:all
+git clone <your-repo-url>
+cd mailauth
 ```
 
-### 2. Configure Environment Variables
-Copy `server/.env.example` to `server/.env` (pre-configured with sensible defaults):
-```env
-PORT=5000
-NODE_ENV=development
-CLIENT_URL=http://localhost:3000
-MONGODB_URI=mongodb://127.0.0.1:27017/mailauth
-JWT_SECRET=super_secret_mailauth_jwt_key_2026_production_ready
-JWT_EXPIRES_IN=7d
-OTP_EXPIRE_MINUTES=10
+### 2. Install Dependencies
 
-# Optional custom SMTP (if empty, Ethereal test mailer is used with clickable preview URLs):
-SMTP_HOST=
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=
-SMTP_PASS=
-EMAIL_FROM="MailAuth <noreply@mailauth.local>"
-```
+You need to install packages for both the backend and frontend.
 
-### 3. Run Backend & Frontend Concurrently
 ```bash
-npm run dev
+# Install backend dependencies
+cd server
+npm install
+
+# Install frontend dependencies
+cd ../client
+npm install
 ```
-* **Frontend**: `http://localhost:3000`
-* **Backend API**: `http://localhost:5000`
 
----
+### 3. Configure Environment Variables
 
-## 🧪 Automated Testing
-
-Run the automated backend test suite covering all 19 verification scenarios (registration, invalid credentials, duplicate prevention, OTP expiration, resend OTP, email verification, cookie sessions, `/me`, password reset, and logout):
+Navigate to the `server/` directory and rename the `.env.example` file to `.env` (or create a new `.env` file).
 
 ```bash
 cd server
-node test-auth-flow.js
+cp .env.example .env
 ```
+
+**Required Database Setup:**
+By default, the application will attempt to connect to a local MongoDB instance (`mongodb://127.0.0.1:27017/mailauth`). If that fails, it will brilliantly fall back to an **In-Memory Development Database**, so the app runs instantly!
+
+To connect your own persistent database, update `MONGODB_URI` in `server/.env`:
+```env
+# For MongoDB Atlas (Cloud):
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.abcde.mongodb.net/mailauth?retryWrites=true&w=majority
+
+# For Local MongoDB:
+MONGODB_URI=mongodb://127.0.0.1:27017/mailauth
+```
+
+**Required Email (SMTP) Setup:**
+To send *actual* OTP emails to real user inboxes, add your Gmail SMTP credentials. 
+*(Note: You need to generate a 16-character **App Password** from your Google Account settings -> Security -> 2-Step Verification -> App Passwords)*
+
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_real_gmail_address@gmail.com
+SMTP_PASS=your_16_character_app_password
+EMAIL_FROM="MailAuth <your_real_gmail_address@gmail.com>"
+```
+*(If you leave these empty, the app will simulate emails and print the OTPs in your terminal).*
+
+### 4. Run the Application
+
+You'll need two terminal windows to run both servers concurrently.
+
+**Terminal 1 (Backend API):**
+```bash
+cd server
+npm run dev
+```
+*(Runs on http://localhost:5000)*
+
+**Terminal 2 (Frontend Client):**
+```bash
+cd client
+npm run dev
+```
+*(Runs on http://localhost:3000)*
 
 ---
 
-## 📡 API Reference
+## 🗂️ Project Structure
 
-| Method | Endpoint | Access | Description |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/health` | Public | API health check |
-| `POST` | `/api/auth/register` | Public | Register new user & send verification OTP |
-| `POST` | `/api/auth/verify-email` | Public | Verify email using 6-digit OTP |
-| `POST` | `/api/auth/resend-otp` | Public | Resend fresh verification OTP |
-| `POST` | `/api/auth/login` | Public | Login with email/password & receive auth cookie |
-| `GET` | `/api/auth/me` | Protected | Retrieve authenticated user session |
-| `POST` | `/api/auth/logout` | Protected | Clear session cookie & log out |
-| `POST` | `/api/auth/forgot-password` | Public | Send password reset OTP |
-| `POST` | `/api/auth/reset-password` | Public | Reset password using OTP |
+```
+mailauth/
+├── client/                     # React Frontend
+│   ├── index.html              # Vite entry HTML
+│   ├── src/
+│   │   ├── App.jsx             # Main Router & Layout
+│   │   ├── context/            # Global state (AuthContext)
+│   │   ├── pages/              # UI Views (Login, Signup, Dashboard, etc.)
+│   │   ├── components/         # Reusable UI components (OtpInput, ProtectedRoute)
+│   │   └── services/           # API integration (axios config)
+│   └── package.json            
+│
+└── server/                     # Express Backend
+    ├── server.js               # Application entry point
+    ├── config/                 # DB and Mailer configurations
+    ├── controllers/            # Request handlers (authController)
+    ├── middleware/             # Express middlewares (authMiddleware)
+    ├── models/                 # Mongoose schemas (User)
+    ├── routes/                 # API route definitions
+    └── package.json            
+```
+
+## 🔒 Security Specifications
+
+- **No LocalStorage for Tokens:** JWTs are intentionally NOT stored in `localStorage` to prevent Cross-Site Scripting (XSS) attacks. They are stored in `httpOnly` cookies.
+- **Cryptographic OTPs:** 6-digit OTPs are generated using Node's native `crypto` module for secure randomness.
+- **Password Salting:** Passwords are never stored in plain text. They are salted and hashed with 10 rounds using bcrypt.
+- **CORS Protection:** Cross-Origin Resource Sharing is strictly configured to only accept requests from the designated client URL and allows credentials.
+
