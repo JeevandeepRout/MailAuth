@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
-import { useSearchParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import OtpInput from '../components/OtpInput';
 import Alert from '../components/Alert';
-import { Lock, Mail, Eye, EyeOff, Loader2, ArrowRight, Check, Sparkles, Terminal } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff, Loader2, ArrowRight, Check, Terminal } from 'lucide-react';
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const queryEmail = searchParams.get('email') || '';
   const [email, setEmail] = useState(queryEmail);
   const [otp, setOtp] = useState('');
-  const [devOtp, setDevOtp] = useState(location.state?.devOtp || '');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -78,13 +76,6 @@ export default function ResetPassword() {
     }
   };
 
-  const handleAutofillDevOtp = () => {
-    if (devOtp) {
-      setOtp(devOtp);
-      setError('');
-    }
-  };
-
   return (
     <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm w-full">
       <div className="text-center mb-6">
@@ -93,28 +84,6 @@ export default function ResetPassword() {
           Enter the 6-digit recovery code and choose a new password
         </p>
       </div>
-
-      {/* Dev Mode Helper Banner */}
-      {devOtp && (
-        <div className="mb-5 p-3.5 bg-indigo-50/80 border border-indigo-200 rounded-xl text-xs text-indigo-900 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-indigo-600 flex-shrink-0" />
-            <div>
-              <span className="font-semibold">Dev Reset Code:</span>{' '}
-              <code className="font-mono text-sm font-bold bg-white px-1.5 py-0.5 rounded border border-indigo-200 text-indigo-700">
-                {devOtp}
-              </code>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={handleAutofillDevOtp}
-            className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-sm transition-colors text-xs"
-          >
-            Auto-fill
-          </button>
-        </div>
-      )}
 
       {error && <Alert type="error" message={error} onClose={() => setError('')} className="mb-5" />}
 
