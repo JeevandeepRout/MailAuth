@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import OtpInput from '../components/OtpInput';
 import Alert from '../components/Alert';
-import { Mail, Loader2, ArrowRight, RotateCw, Sparkles, Terminal } from 'lucide-react';
+import { Mail, Loader2, ArrowRight, RotateCw, Terminal } from 'lucide-react';
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const queryEmail = searchParams.get('email') || '';
   const [email, setEmail] = useState(queryEmail);
   const [otp, setOtp] = useState('');
-  const [devOtp, setDevOtp] = useState(location.state?.devOtp || '');
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [error, setError] = useState('');
-  const [info, setInfo] = useState(location.state?.message || '');
+  const [info, setInfo] = useState('');
 
   // Cooldown countdown timer
   useEffect(() => {
@@ -84,9 +82,6 @@ export default function VerifyEmail() {
       const res = await api.post('/auth/resend-otp', { email: email.trim() });
       if (res.data?.success) {
         setInfo(res.data.message || 'A fresh verification code has been sent to your email.');
-        if (res.data?.data?.devOtp) {
-          setDevOtp(res.data.data.devOtp);
-        }
         setOtp('');
         setCooldown(60); // 60 seconds cooldown
       }
@@ -96,13 +91,6 @@ export default function VerifyEmail() {
       setError(message);
     } finally {
       setResending(false);
-    }
-  };
-
-  const handleAutofillDevOtp = () => {
-    if (devOtp) {
-      setOtp(devOtp);
-      setError('');
     }
   };
 
@@ -119,28 +107,6 @@ export default function VerifyEmail() {
           <span className="font-semibold text-slate-800">{email || 'your email'}</span>
         </p>
       </div>
-
-      {/* Dev Mode Helper Banner */}
-      {/*{devOtp && (
-        <div className="mb-5 p-3.5 bg-indigo-50/80 border border-indigo-200 rounded-xl text-xs text-indigo-900 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-indigo-600 flex-shrink-0" />
-            <div>
-              <span className="font-semibold">Dev OTP:</span>{' '}
-              <code className="font-mono text-sm font-bold bg-white px-1.5 py-0.5 rounded border border-indigo-200 text-indigo-700">
-                {devOtp}
-              </code>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={handleAutofillDevOtp}
-            className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-sm transition-colors text-xs"
-          >
-            Auto-fill
-          </button>
-        </div>)*/
-      }
 
       {info && <Alert type="info" message={info} onClose={() => setInfo('')} className="mb-5" />}
       {error && <Alert type="error" message={error} onClose={() => setError('')} className="mb-5" />}
